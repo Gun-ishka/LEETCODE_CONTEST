@@ -1,0 +1,66 @@
+class Solution {
+public:
+    int findCrossingTime(int n, int k, vector<vector<int>>& time) {
+        int t=0;
+        vector<pair<int,int>> h1,h2,h3,h4;
+        for(int i=0;i<k;++i)
+            h2.push_back({time[i][0]+time[i][2],i});
+        make_heap(h2.begin(),h2.end());
+        while(1){
+            // cout<<"t="<<t<<endl;
+            if(!h3.empty()){
+                auto f=h3.front();
+                pop_heap(h3.begin(),h3.end());
+                h3.pop_back();
+                
+                h1.push_back({-(t+time[f.second][2]+time[f.second][3]),f.second});
+                push_heap(h1.begin(),h1.end());
+                
+                t+=time[f.second][2];
+            }
+            else if(n>0&&!h2.empty()){
+                auto f=h2.front();
+                pop_heap(h2.begin(),h2.end());
+                h2.pop_back();
+                
+                h4.push_back({-(t+time[f.second][0]+time[f.second][1]),f.second});
+                push_heap(h4.begin(),h4.end());
+                
+                t+=time[f.second][0];
+                --n;                
+            }
+            else{
+                if(n==0&&h4.empty())
+                    return t;
+                int z=INT_MAX;
+                if(!h1.empty()){
+                    z=min(z,-h1[0].first);
+                }
+                if(!h4.empty()){
+                    z=min(z,-h4[0].first);
+                }
+                if(z==INT_MAX)
+                    break;
+                t=z;
+            }
+            while(!h1.empty()&&-h1[0].first<=t){
+                int i=h1[0].second;
+                h2.push_back({time[i][0]+time[i][2],i});
+                push_heap(h2.begin(),h2.end());
+                pop_heap(h1.begin(),h1.end());
+                h1.pop_back();
+            }
+            
+            while(!h4.empty()&&-h4[0].first<=t){
+                int i=h4[0].second;
+                h3.push_back({time[i][0]+time[i][2],i});
+                push_heap(h3.begin(),h3.end());
+                pop_heap(h4.begin(),h4.end());
+                h4.pop_back();
+            }
+            
+            
+        }
+        return t;
+    }
+};
